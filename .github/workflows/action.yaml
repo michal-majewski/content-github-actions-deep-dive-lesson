@@ -85,7 +85,10 @@ jobs:
         run: sleep 30
       - name: Destroy test function
         if: ${{ always() }}
-        run: aws lambda delete-function --function-name test-func
+        run: |
+          aws lambda delete-function --function-name test-func \
+            --role arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/my-lambda-role
+        
   
   deploy:
     runs-on: ubuntu-latest

@@ -1,0 +1,32 @@
+name: Deploy site to production bucket
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      BUCKET_NAME: cfst-3457-49c2cad4658cc800160aaf9fcf9fc-prodbucket-qfayi58lyr3x
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      - name: Set up NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Build the site
+        run: |
+          npm install
+          npm ci
+          npm run build
+      - name: Deploy files to the bucket
+        run: aws s3 cp public s3://${{ env.BUCKET_NAME }}/ --recursive  

@@ -25,6 +25,7 @@ jobs:
           node-version: 20
       - name: Build the site
         run: |
+          npm install
           npm ci
           npm run build
       - name: Deploy files to the bucket
